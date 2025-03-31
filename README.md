@@ -1,4 +1,4 @@
-**txtScrap for Windows**
+# txtScrap for Windows
 
 クリップボードのテキストっぽい情報を、プレーンテキストとしてマイドキュメントのtxtScrapフォルダ配下に、日付ファイルで保存します。<BR>
 txtScrapフォルダや日付ファイルがなければ新規作成します。すでに日付ファイルある場合は追記します。<BR>
