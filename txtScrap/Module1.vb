@@ -28,7 +28,7 @@ Module Module1
 
             ' ファイルに書き込み
             Using sw As New StreamWriter(txtScrapFile, True, utf8)
-                sw.Write(dt.ToString("yyyy/MM/dd HH:mm:ss") & vbCrLf & clipboardText & vbCrLf)
+                sw.Write(dt.ToString("yyyy/MM/dd HH:mm:ss") & vbCrLf & clipboardText & vbCrLf & vbCrLf)
             End Using
 
         Catch ioEx As IOException
@@ -38,5 +38,6 @@ Module Module1
         Catch ex As Exception
             Console.WriteLine("予期しないエラーが発生しました: " & ex.Message)
         End Try
+        ' FinallyブロックはUsingステートメントにより不要になった
     End Sub
 End Module
