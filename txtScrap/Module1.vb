@@ -1,13 +1,21 @@
 Imports System.IO
 Imports System.Windows.Forms
+Imports System.Drawing ' これを追加
 
 Module Module1
+    Private notify As NotifyIcon
+
     <STAThread>
     Sub Main()
+        ' NotifyIconの初期化
+        notify = New NotifyIcon()
+        notify.Icon = System.Drawing.SystemIcons.Information '
+        notify.Visible = True
+
         Try
             ' クリップボードにテキストがあるか確認
             If Not My.Computer.Clipboard.ContainsText() Then
-                ' Console.WriteLine("クリップボードにテキストがありません")
+                notify.ShowBalloonTip(3000, "エラー", "クリップボードにテキストがありません", ToolTipIcon.Error)
                 Exit Sub
             End If
 
@@ -17,8 +25,8 @@ Module Module1
 
             ' 現在時刻とファイルパスを設定
             Dim dt As DateTime = DateTime.Now
-            Dim txtScrapDirectory As String = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "txtScrap")
-            Dim txtScrapFile As String = Path.Combine(txtScrapDirectory, dt.ToString("yyyyMMdd") & ".txt")
+            Dim txtScrapDirectory As String = "G:\マイドライブ\txtScrap"
+            Dim txtScrapFile As String = Path.Combine(txtScrapDirectory, dt.ToString("yyyyMMdd") & ".md")
             Dim utf8 As System.Text.Encoding = System.Text.Encoding.UTF8
 
             ' ディレクトリが存在しない場合は作成
@@ -28,16 +36,22 @@ Module Module1
 
             ' ファイルに書き込み
             Using sw As New StreamWriter(txtScrapFile, True, utf8)
-                sw.Write(dt.ToString("yyyy/MM/dd HH:mm:ss") & vbCrLf & clipboardText & vbCrLf & vbCrLf)
+                sw.Write("#### " & dt.ToString("yyyy/MM/dd HH:mm:ss") & vbCrLf & clipboardText & vbCrLf & "***" & vbCrLf)
             End Using
 
+            ' 書き込み成功の通知
+            notify.ShowBalloonTip(3000, "成功", "テキストが正常に保存されました", ToolTipIcon.Info)
+
         Catch ioEx As IOException
-            Console.WriteLine("ファイル操作中にエラーが発生しました: " & ioEx.Message)
+            notify.ShowBalloonTip(3000, "エラー", "ファイル操作中にエラーが発生しました: " & ioEx.Message, ToolTipIcon.Error)
         Catch formatEx As FormatException
-            Console.WriteLine("データ形式エラーが発生しました: " & formatEx.Message)
+            notify.ShowBalloonTip(3000, "エラー", "データ形式エラーが発生しました: " & formatEx.Message, ToolTipIcon.Error)
         Catch ex As Exception
-            Console.WriteLine("予期しないエラーが発生しました: " & ex.Message)
+            notify.ShowBalloonTip(3000, "エラー", "予期しないエラーが発生しました: " & ex.Message, ToolTipIcon.Error)
+        Finally
+            System.Threading.Thread.Sleep(3000)
+            notify.Visible = False
+            notify.Dispose()
         End Try
-        ' FinallyブロックはUsingステートメントにより不要になった
     End Sub
 End Module
